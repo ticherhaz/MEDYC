@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ashrof.medyc">
+
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MEDYC"
+        tools:ignore="AllowBackup">
+        <activity
+            android:name=".activity.ForgotActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Forgot Password"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.SignInActivity" />
+        </activity>
+        <activity
+            android:name=".activity.user.MedicinesDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Medicine Detail"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.user.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.user.HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/Theme.MEDYC.NoActionBar" />
+        <activity android:name=".activity.administrator.AdminHomeActivity" />
+        <activity
+            android:name=".activity.SignUpActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Sign Up"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.SignInActivity" />
+        </activity>
+        <activity
+            android:name=".activity.SplashScreenActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.MEDYC.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.SignInActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+    </application>
+</manifest>

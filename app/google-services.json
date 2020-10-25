@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "157219085753",
+    "firebase_url": "https://medyc-ashrof.firebaseio.com",
+    "project_id": "medyc-ashrof",
+    "storage_bucket": "medyc-ashrof.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157219085753:android:3dcd61b97067d31cee6a68",
+        "android_client_info": {
+          "package_name": "com.ashrof.medyc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157219085753-9jeqji35n7p8kb7vldo9302kharm5sb7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ashrof.medyc",
+            "certificate_hash": "8c6bcbb07a03b6db3464f5202e18b05b5c702861"
+          }
+        },
+        {
+          "client_id": "157219085753-cjbp73a34t7lihqrbtu9grpcljk7b7ts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAR4vz3pMLYh2GOLnZ0mfHzFOlijonw5sY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "157219085753-cjbp73a34t7lihqrbtu9grpcljk7b7ts.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

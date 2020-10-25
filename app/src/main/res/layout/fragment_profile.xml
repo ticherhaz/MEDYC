@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.user.ProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/iv_profile"
+                android:layout_width="210dp"
+                android:layout_height="210dp"
+                android:src="@drawable/ic_baseline_account_circle_24" />
+
+            <ImageView
+                android:id="@+id/iv_upload_profile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|right"
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                tools:ignore="RtlHardcoded" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Full Name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Email" />
+
+            <TextView
+                android:id="@+id/tv_number_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Number Phone"
+                app:drawableRightCompat="@drawable/ic_baseline_edit_24" />
+
+            <TextView
+                android:id="@+id/tv_birthday_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Birthday Date"
+                app:drawableRightCompat="@drawable/ic_baseline_edit_24" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
