@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
 
+    private static final int HOW_MANY_DAYS = 120;
     private View root;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -55,17 +56,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void setCalendarView() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
-        calendar.set(Calendar.HOUR_OF_DAY, 23);//not sure this is needed
-        long endOfMonth = calendar.getTimeInMillis();
-        //may need to reinitialize calendar, not sure
-        calendar = Calendar.getInstance();
-        calendar.set(Calendar.DATE, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        long startOfMonth = calendar.getTimeInMillis();
-        calendarView.setMinDate(System.currentTimeMillis() - 1000);
-        calendarView.setMaxDate(endOfMonth);
+        //Init calendar view
+        final Calendar maxDate = Calendar.getInstance();
+        maxDate.add(Calendar.DATE, HOW_MANY_DAYS);
+        final Calendar minDate = Calendar.getInstance();
+        minDate.add(Calendar.DATE, 0);
+        calendarView.setMaxDate(maxDate.getTimeInMillis());
+        calendarView.setMinDate(minDate.getTimeInMillis());
 
         //set on click
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {

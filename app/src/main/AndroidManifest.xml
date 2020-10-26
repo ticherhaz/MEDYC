@@ -22,6 +22,15 @@
         android:theme="@style/Theme.MEDYC"
         tools:ignore="AllowBackup">
         <activity
+            android:name=".activity.user.AddMedicinesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Add Medicines"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.user.HomeActivity" />
+        </activity>
+        <activity
             android:name=".activity.ForgotActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Forgot Password"
@@ -68,4 +77,5 @@
         <activity android:name=".MainActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
+
 </manifest>

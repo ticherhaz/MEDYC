@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="4dp"
+        android:background="@drawable/button_custom"
         android:text="Submit"
         android:textAllCaps="false" />
 </LinearLayout>
