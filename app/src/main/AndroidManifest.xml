@@ -22,6 +22,24 @@
         android:theme="@style/Theme.MEDYC"
         tools:ignore="AllowBackup">
         <activity
+            android:name=".activity.administrator.AdminFeedbackActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="List Feedback"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.administrator.AdminHomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.administrator.AdminUserActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="List Users"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.administrator.AdminHomeActivity" />
+        </activity>
+        <activity
             android:name=".activity.user.AddMedicinesActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Add Medicines"
