@@ -120,36 +120,42 @@
                 android:padding="8dp">
 
                 <ImageView
+                    android:id="@+id/iv_white"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/white" />
 
                 <ImageView
+                    android:id="@+id/iv_yellow"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/yellow_600" />
 
                 <ImageView
+                    android:id="@+id/iv_red"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/red_600" />
 
                 <ImageView
+                    android:id="@+id/iv_pink"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/pink_600" />
 
                 <ImageView
+                    android:id="@+id/iv_teal"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/teal_600" />
 
                 <ImageView
+                    android:id="@+id/iv_light_green"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
@@ -166,36 +172,42 @@
                 android:padding="8dp">
 
                 <ImageView
+                    android:id="@+id/iv_black"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/black" />
 
                 <ImageView
+                    android:id="@+id/iv_orange"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/orange_600" />
 
                 <ImageView
+                    android:id="@+id/iv_brown"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/brown_600" />
 
                 <ImageView
+                    android:id="@+id/iv_purple"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/purple_600" />
 
                 <ImageView
+                    android:id="@+id/iv_blue"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@color/blue_600" />
 
                 <ImageView
+                    android:id="@+id/iv_green"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_margin="4dp"
