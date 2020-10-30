@@ -16,13 +16,14 @@ import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.activity.user.MedicinesDetailActivity;
+import com.ashrof.medyc.model.Medicines;
 
 import java.util.Calendar;
 
@@ -64,7 +65,7 @@ public class NotificationUtil {
     }
 
     public static void PillReminderNotification(final Context context, final String key, final int notificationUid,
-                                        final String summary, final String title, final String description) {
+                                                final String summary, final String title, final String description, final String medicinesColor) {
         // 1. Create/Retrieve Notification Channel for O and beyond devices (26+).
         final String notificationChannelId = createNotificationChannel(context, NOTIFICATION_CHANNEL_ID_PILL_REMINDER, NOTIFICATION_CHANNEL_NAME_PILL_REMINDER, NOTIFICATION_CHANNEL_DESC_PILL_REMINDER);
 
@@ -96,7 +97,7 @@ public class NotificationUtil {
                     .setLargeIcon(bitmap)
                     .setContentIntent(notifyPendingIntent)
                     .setDefaults(NotificationCompat.DEFAULT_ALL) //ini untuk sound light and vibrate
-                    .setColor(ContextCompat.getColor(context.getApplicationContext(), R.color.colorPrimary))
+                    .setColor(Color.parseColor(medicinesColor))
                     .setColorized(true)
                     .setCategory(Notification.CATEGORY_REMINDER)
                     .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -113,7 +114,7 @@ public class NotificationUtil {
                     .setLargeIcon(bitmap)
                     .setContentIntent(notifyPendingIntent)
                     .setDefaults(NotificationCompat.DEFAULT_ALL) //ini untuk sound light and vibrate
-                    .setColor(ContextCompat.getColor(context.getApplicationContext(), R.color.colorPrimary))
+                    .setColor(Color.parseColor(medicinesColor))
                     .setColorized(true)
                     .setPriority(NotificationCompat.PRIORITY_MAX)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -134,25 +135,29 @@ public class NotificationUtil {
         alarmManager.cancel(pendingIntent);
     }
 
-    public static void AlarmManagerActivity(final Context context, final int agentProfileId, final int notificationUid, final String channelUid, final int WHAT_TIME) {
+    public static void AlarmManagerPillReminder(final Context context, final int notificationUid, final String channelUid, final int month, final int day, final int hour, final int min, final Medicines medicines) {
         final Calendar calendar = Calendar.getInstance();
-        final Calendar now = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, WHAT_TIME); //13 ni maksudnya kul 1pm //WHAT_TIME
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0); //so conclusion = 7.00 pm esok
+        //final Calendar now = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.MONTH, month);
 
         //check whether the time is earlier than current time. If so, set it to tomorrow. Otherwise, all alarms for earlier time will fire
-        if (calendar.before(now)) {
+       /* if (calendar.before(now)) {
             calendar.add(Calendar.DATE, 1);
-        }
+        }*/
         final long timeTrigger = calendar.getTimeInMillis();
+        Log.i("???", "asd:: " + timeTrigger);
 
         //Setting intent to class where Alarm broadcast message will be handled
         Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
-        intent.putExtra("channelName", "Activity Tomorrow Task");
         intent.putExtra("channelUid", channelUid);
-        intent.putExtra("agentProfileId", agentProfileId);
         intent.putExtra("notificationUid", notificationUid);
+        intent.putExtra("medicinesName", medicines.getName());
+        intent.putExtra("medicinesPicture", medicines.getMedicinePicture().name());
+        intent.putExtra("medicinesColor", medicines.getColourMedicine().getCodeColor());
 
         //Setting alarm pending intent
         enableBootReceiver(context);
@@ -162,7 +167,7 @@ public class NotificationUtil {
 
         //We are NOT using setRepeating and setInexactRepeating because there will be problems for Android API above.
         //Can see this https://stackoverflow.com/a/39739886
-
+        Log.i("???", "alarmManagerActivity:: " + alarmManagerActivity);
         if (Build.VERSION.SDK_INT >= 23) {
             alarmManagerActivity.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeTrigger, pendingIntentActivity);
         } else if (Build.VERSION.SDK_INT >= 19) {
@@ -210,12 +215,7 @@ public class NotificationUtil {
     }
 
     public static void AlarmManager5Minutes(final Context context, final int notificationUid) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
-        Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
+        final Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
         intent.putExtra("notificationUid", notificationUid);
 
         final long timeTrigger = System.currentTimeMillis() + (5 * 60 * 1000); //5 mins

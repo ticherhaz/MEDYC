@@ -2,18 +2,19 @@ package com.ashrof.medyc.model;
 
 import com.ashrof.medyc.enumerator.Colour;
 import com.ashrof.medyc.enumerator.Status;
+import com.ashrof.medyc.enumerator.Ubat;
 
 public class Medicines {
 
     private String medicinesUid, name, onCreatedDate;
-    private int medicinePicture;
+    private Ubat medicinePicture;
     private Colour colourMedicine;
     private Status status;
 
     public Medicines() {
     }
 
-    public Medicines(String medicinesUid, String name, String onCreatedDate, int medicinePicture, Colour colourMedicine, Status status) {
+    public Medicines(String medicinesUid, String name, String onCreatedDate, Ubat medicinePicture, Colour colourMedicine, Status status) {
         this.medicinesUid = medicinesUid;
         this.name = name;
         this.onCreatedDate = onCreatedDate;
@@ -46,11 +47,11 @@ public class Medicines {
         this.onCreatedDate = onCreatedDate;
     }
 
-    public int getMedicinePicture() {
+    public Ubat getMedicinePicture() {
         return medicinePicture;
     }
 
-    public void setMedicinePicture(int medicinePicture) {
+    public void setMedicinePicture(Ubat medicinePicture) {
         this.medicinePicture = medicinePicture;
     }
 

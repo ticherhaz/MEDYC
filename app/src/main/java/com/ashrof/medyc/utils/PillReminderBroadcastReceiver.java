@@ -3,22 +3,37 @@ package com.ashrof.medyc.utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 
 public class PillReminderBroadcastReceiver extends BroadcastReceiver {
 
-   // private LoginResponse.Data UserData = FastSave.getInstance().getObject(Constant.USER_DATA, LoginResponse.Data.class);
+    // private LoginResponse.Data UserData = FastSave.getInstance().getObject(Constant.USER_DATA, LoginResponse.Data.class);
 
     @Override
     public void onReceive(Context context, Intent intent) {
         //See this note if onReceive not called
         //https://stackoverflow.com/a/60197247/9346054
-        final String channelName = intent.getStringExtra("channelName");
         final String channelUid = intent.getStringExtra("channelUid");
-        final int agentProfileId = intent.getIntExtra("agentProfileId", 0);
         final int notificationUid = intent.getIntExtra("notificationUid", 0);
+        final String medicinesName = intent.getStringExtra("medicinesName");
+        final String medicinesPicture = intent.getStringExtra("medicinesPicture");
+        final String medicinesColor = intent.getStringExtra("medicinesColor");
+        Log.i("???", "onReceive::");
+
+        if (intent.getAction() != null) {
+            if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) { //ok at here we handle if the phone reboot, and on back, it will trigger here, so we need to set back the alarm
+                //Just in case if the method not trigger after boot, so we call these method again.
+            }
+        } else {
+
+        }
+
+        NotificationUtil.PillReminderNotification(context, channelUid, (int) System.currentTimeMillis(),
+                "Pill Reminder", medicinesName, "Please take medicines for " + medicinesName, medicinesColor);
 
         /*//Example situation, at 12pm, no internet right, then it come here and set for them
+
 
         //This is crucial part where when there is no connection, we will call this first
         if (!IsNetworkAvailable(context)) {

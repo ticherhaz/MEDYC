@@ -32,7 +32,6 @@ public class MedicinesFragment extends Fragment {
     private View root;
     private Button buttonAdd;
 
-
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
@@ -80,7 +79,7 @@ public class MedicinesFragment extends Fragment {
                 holder.getTvStatus().setText(model.getStatus().name());
                 holder.getTvDate().setText(ConvertTarikhMasa2LocalTime(model.getOnCreatedDate()));
 
-                holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().name()));
+                holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().getCodeColor()));
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -109,8 +108,7 @@ public class MedicinesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
 
-
-    private static class MedicinesViewHolder extends RecyclerView.ViewHolder {
+    public static class MedicinesViewHolder extends RecyclerView.ViewHolder {
 
         private View view;
         private CardView cardView;

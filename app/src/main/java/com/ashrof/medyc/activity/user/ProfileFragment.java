@@ -148,9 +148,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
         setTvBirthdayDate();
-        setTvHouse();
         setTvNumberPhone();
         setIvUploadProfile();
         return root;
@@ -269,11 +267,6 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-
-    private void setTvHouse() {
-        // tvHouse.setOnClickListener(view ->);
-    }
-
     private void setTvBirthdayDate() {
         tvBirthdayDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,7 +279,6 @@ public class ProfileFragment extends Fragment {
     private void setTvNumberPhone() {
         tvNumberPhone.setOnClickListener(v -> dialogUpdatePhone());
     }
-
 
     private void dialogUpdatePhone() {
         final Dialog dialog = new Dialog(requireContext());

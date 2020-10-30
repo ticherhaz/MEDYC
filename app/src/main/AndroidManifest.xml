@@ -94,6 +94,15 @@
         <activity android:name=".activity.SignInActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
+        <receiver
+            android:name=".utils.PillReminderBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
