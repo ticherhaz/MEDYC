@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
+import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
@@ -79,6 +81,7 @@ public class MedicinesFragment extends Fragment {
                 holder.getTvStatus().setText(model.getStatus().name());
                 holder.getTvDate().setText(ConvertTarikhMasa2LocalTime(model.getOnCreatedDate()));
 
+                holder.getIvMedicine().setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(model.getMedicinePicture())));
                 holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().getCodeColor()));
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {

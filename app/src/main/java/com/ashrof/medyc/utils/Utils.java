@@ -12,6 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ashrof.medyc.R;
+import com.ashrof.medyc.enumerator.Ubat;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -183,5 +186,24 @@ public class Utils {
                 adContainerView.setVisibility(View.GONE);
             }
         }
+    }
+
+    public static int GetDrawableUbat(final Ubat ubat) {
+        int drawableMedicine = -1;
+        switch (ubat) {
+            case UBAT1:
+                drawableMedicine = R.drawable.ubat1;
+                break;
+            case UBAT2:
+                drawableMedicine = R.drawable.ubat2;
+                break;
+            case UBAT3:
+                drawableMedicine = R.drawable.ubat3;
+                break;
+            case UBAT4:
+                drawableMedicine = R.drawable.ubat4;
+                break;
+        }
+        return drawableMedicine;
     }
 }

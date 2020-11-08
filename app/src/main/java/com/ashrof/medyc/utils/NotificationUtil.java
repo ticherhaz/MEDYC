@@ -23,6 +23,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.activity.user.MedicinesDetailActivity;
+import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
 
 import java.util.Calendar;
@@ -64,8 +65,8 @@ public class NotificationUtil {
         }
     }
 
-    public static void PillReminderNotification(final Context context, final String key, final int notificationUid,
-                                                final String summary, final String title, final String description, final String medicinesColor) {
+    public static void PillReminderNotification(final Context context, final int notificationUid,
+                                                final String summary, final String title, final String description, final String medicinesColor, final String medicinePicture, final String medicineUid, final String medicineName) {
         // 1. Create/Retrieve Notification Channel for O and beyond devices (26+).
         final String notificationChannelId = createNotificationChannel(context, NOTIFICATION_CHANNEL_ID_PILL_REMINDER, NOTIFICATION_CHANNEL_NAME_PILL_REMINDER, NOTIFICATION_CHANNEL_DESC_PILL_REMINDER);
 
@@ -77,11 +78,18 @@ public class NotificationUtil {
 
         // 3. Set up main Intent for notification.
         final Intent notifyIntent = new Intent(context, MedicinesDetailActivity.class);
-        notifyIntent.putExtra("medicineId", key); //so kita boleh trasnfer value daripada noti pergi ke activity
+        notifyIntent.putExtra("medicineUid", medicineUid);
+        notifyIntent.putExtra("medicineName", medicineName);
+        notifyIntent.putExtra("medicinePicture", medicinePicture);
+        notifyIntent.putExtra("medicineColor", medicinesColor);
+
+        //notifyIntent.setAction(Intent.ACTION_MAIN);
+        //notifyIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        //notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         final PendingIntent notifyPendingIntent = PendingIntent.getActivity(context, notificationUid, notifyIntent, PendingIntent.FLAG_ONE_SHOT);
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_logo);
+        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), Utils.GetDrawableUbat(Ubat.valueOf(medicinePicture)));
 
         assert notificationChannelId != null;
         final NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(context.getApplicationContext(), notificationChannelId);
@@ -135,7 +143,7 @@ public class NotificationUtil {
         alarmManager.cancel(pendingIntent);
     }
 
-    public static void AlarmManagerPillReminder(final Context context, final int notificationUid, final String channelUid, final int month, final int day, final int hour, final int min, final Medicines medicines) {
+    public static void AlarmManagerPillReminder(final Context context, final int notificationUid, final int month, final int day, final int hour, final int min, final Medicines medicines) {
         final Calendar calendar = Calendar.getInstance();
         //final Calendar now = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -153,8 +161,7 @@ public class NotificationUtil {
 
         //Setting intent to class where Alarm broadcast message will be handled
         Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
-        intent.putExtra("channelUid", channelUid);
-        intent.putExtra("notificationUid", notificationUid);
+        intent.putExtra("medicinesUid", medicines.getMedicinesUid());
         intent.putExtra("medicinesName", medicines.getName());
         intent.putExtra("medicinesPicture", medicines.getMedicinePicture().name());
         intent.putExtra("medicinesColor", medicines.getColourMedicine().getCodeColor());

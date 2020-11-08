@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".activity.user.MedicinesDetailActivity">
 
-    <ProgressBar
-        android:id="@+id/pb"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/iv_medicine"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="@string/nav_header_desc"
+        app:srcCompat="@mipmap/ic_launcher_round" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/btn_add"
+    <TextView
+        android:id="@+id/tv_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="8dp"
-        android:text="Add Medication"
-        android:textAllCaps="false" />
-</RelativeLayout>
+        android:textStyle="bold"
+        android:textSize="21sp"
+        android:gravity="center_horizontal"
+        android:text="Medicine Name"
+        android:textAlignment="center" />
+
+
+</LinearLayout>

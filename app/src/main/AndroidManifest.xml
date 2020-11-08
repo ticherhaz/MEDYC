@@ -61,7 +61,7 @@
             android:name=".activity.user.MedicinesDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Medicine Detail"
-            android:launchMode="singleTop">
+            android:parentActivityName=".activity.user.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.user.HomeActivity" />

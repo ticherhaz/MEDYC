@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import static com.ashrof.medyc.utils.Constant.DB_MEDICINE;
-import static com.ashrof.medyc.utils.Constant.NOTIFICATION_CHANNEL_ID_PILL_REMINDER;
 import static com.ashrof.medyc.utils.Constant.NOTIFICATION_ID_PILL_REMINDER;
 import static net.ticherhaz.tarikhmasa.TarikhMasa.ConvertTarikhMasa2LocalTime;
 
@@ -132,12 +131,13 @@ public class HomeFragment extends Fragment {
                 holder.getTvStatus().setText(model.getStatus().name());
                 holder.getTvDate().setText(ConvertTarikhMasa2LocalTime(model.getOnCreatedDate()));
 
+                holder.getIvMedicine().setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(model.getMedicinePicture())));
                 holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().getCodeColor()));
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, NOTIFICATION_CHANNEL_ID_PILL_REMINDER, month, day, hour, min, model);
+                        NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model);
                         Utils.ShowToast(requireContext(), "Successfully set reminder for " + model.getName());
                         dialog.dismiss();
                     }
