@@ -22,6 +22,15 @@
         android:theme="@style/Theme.MEDYC"
         tools:ignore="AllowBackup">
         <activity
+            android:name=".activity.user.MedicinesEditActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Edit Medicine"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.user.HomeActivity" />
+        </activity>
+        <activity
             android:name=".activity.administrator.AdminFeedbackActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="List Feedback"

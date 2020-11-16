@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
-import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
 import com.ashrof.medyc.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -84,11 +83,15 @@ public class MedicinesFragment extends Fragment {
                 holder.getIvMedicine().setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(model.getMedicinePicture())));
                 holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().getCodeColor()));
 
-                holder.getView().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //
-                    }
+                holder.getView().setOnClickListener(view -> {
+                    final Intent intent = new Intent(getContext(), MedicinesEditActivity.class);
+                    intent.putExtra("medicinesUid", model.getMedicinesUid());
+                    intent.putExtra("name", model.getName());
+                    intent.putExtra("status", model.getStatus());
+                    intent.putExtra("onCreatedDate", model.getOnCreatedDate());
+                    intent.putExtra("picture", model.getMedicinePicture().name());
+                    intent.putExtra("color", model.getColourMedicine().name());
+                    startActivity(intent);
                 });
             }
 
