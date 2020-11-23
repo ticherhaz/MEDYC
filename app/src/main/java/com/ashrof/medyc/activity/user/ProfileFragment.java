@@ -100,7 +100,7 @@ public class ProfileFragment extends Fragment {
 
         user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("user").child(user.getUserUid());
+        databaseReference = firebaseDatabase.getReference().child(Constant.DB_USER).child(user.getUserUid());
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 

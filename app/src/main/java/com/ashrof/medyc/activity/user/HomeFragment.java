@@ -2,6 +2,7 @@ package com.ashrof.medyc.activity.user;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CalendarView;
-import android.widget.ProgressBar;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -20,17 +20,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.model.Reminder;
 import com.ashrof.medyc.utils.NotificationUtil;
 import com.ashrof.medyc.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import net.ticherhaz.tarikhmasa.TarikhMasa;
 
 import java.util.Calendar;
 import java.util.Objects;
 
 import static com.ashrof.medyc.utils.Constant.DB_MEDICINE;
+import static com.ashrof.medyc.utils.Constant.DB_REMINDER;
 import static com.ashrof.medyc.utils.Constant.NOTIFICATION_ID_PILL_REMINDER;
 import static net.ticherhaz.tarikhmasa.TarikhMasa.ConvertTarikhMasa2LocalTime;
 
@@ -39,11 +45,19 @@ public class HomeFragment extends Fragment {
 
     private static final int HOW_MANY_DAYS = 120;
     private View root;
+
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+
     private CalendarView calendarView;
     private FirebaseRecyclerOptions<Medicines> firebaseRecyclerOptions;
     private FirebaseRecyclerAdapter<Medicines, MedicinesFragment.MedicinesViewHolder> firebaseRecyclerAdapter;
+
+    private String medicineUid;
+    private String medicineName;
+    private String reminderUid;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -57,11 +71,26 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        initIntent();
         root = inflater.inflate(R.layout.fragment_home, container, false);
         initFirebase();
         initView();
         return root;
     }
+
+    private void initIntent() {
+        final Intent intent = requireActivity().getIntent();
+        medicineUid = intent.getStringExtra("medicineUid");
+        reminderUid = intent.getStringExtra("reminderUid");
+        medicineName = intent.getStringExtra("medicineName");
+        if (medicineUid != null) {
+            final Intent intent1 = new Intent(getActivity(), MedicinesDetailActivity.class);
+            intent1.putExtra("medicineUid", medicineUid);
+            intent1.putExtra("reminderUid", reminderUid);
+            requireActivity().startActivity(intent1);
+        }
+    }
+
 
     private void initView() {
         calendarView = root.findViewById(R.id.calendarView);
@@ -71,6 +100,9 @@ public class HomeFragment extends Fragment {
     private void initFirebase() {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
     }
 
     private void setCalendarView() {
@@ -137,8 +169,14 @@ public class HomeFragment extends Fragment {
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model);
+                        final String reminderUid = databaseReference.push().getKey();
+
+                        NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model, reminderUid);
                         Utils.ShowToast(requireContext(), "Successfully set reminder for " + model.getName());
+
+                        //After that we add to reminder
+                        final Reminder reminder = new Reminder(reminderUid, model.getMedicinesUid(), TarikhMasa.GetTarikhMasa(), null, null, month, day, hour, min);
+                        databaseReference.child(DB_REMINDER).child(Objects.requireNonNull(firebaseAuth.getUid())).child(Objects.requireNonNull(reminderUid)).setValue(reminder);
                         dialog.dismiss();
                     }
                 });
@@ -153,7 +191,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onDataChanged() {
-                ((ProgressBar) dialog.findViewById(R.id.pb)).setVisibility(View.GONE);
+                dialog.findViewById(R.id.pb).setVisibility(View.GONE);
             }
         };
 

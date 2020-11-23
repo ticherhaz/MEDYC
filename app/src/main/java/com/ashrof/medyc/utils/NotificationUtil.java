@@ -21,7 +21,9 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.ashrof.medyc.MainActivity;
 import com.ashrof.medyc.R;
+import com.ashrof.medyc.activity.user.HomeActivity;
 import com.ashrof.medyc.activity.user.MedicinesDetailActivity;
 import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
@@ -66,7 +68,7 @@ public class NotificationUtil {
     }
 
     public static void PillReminderNotification(final Context context, final int notificationUid,
-                                                final String summary, final String title, final String description, final String medicinesColor, final String medicinePicture, final String medicineUid, final String medicineName) {
+                                                final String summary, final String title, final String description, final String medicinesColor, final String medicinePicture,final String reminderUid, final String medicineUid, final String medicineName) {
         // 1. Create/Retrieve Notification Channel for O and beyond devices (26+).
         final String notificationChannelId = createNotificationChannel(context, NOTIFICATION_CHANNEL_ID_PILL_REMINDER, NOTIFICATION_CHANNEL_NAME_PILL_REMINDER, NOTIFICATION_CHANNEL_DESC_PILL_REMINDER);
 
@@ -77,7 +79,8 @@ public class NotificationUtil {
                 .setSummaryText(summary); //This is a small text at right of title bold notification
 
         // 3. Set up main Intent for notification.
-        final Intent notifyIntent = new Intent(context, MedicinesDetailActivity.class);
+        final Intent notifyIntent = new Intent(context, HomeActivity.class);
+        notifyIntent.putExtra("reminderUid", reminderUid);
         notifyIntent.putExtra("medicineUid", medicineUid);
         notifyIntent.putExtra("medicineName", medicineName);
         notifyIntent.putExtra("medicinePicture", medicinePicture);
@@ -143,7 +146,7 @@ public class NotificationUtil {
         alarmManager.cancel(pendingIntent);
     }
 
-    public static void AlarmManagerPillReminder(final Context context, final int notificationUid, final int month, final int day, final int hour, final int min, final Medicines medicines) {
+    public static void AlarmManagerPillReminder(final Context context, final int notificationUid, final int month, final int day, final int hour, final int min, final Medicines medicines, final String reminderUid) {
         final Calendar calendar = Calendar.getInstance();
         //final Calendar now = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -157,10 +160,10 @@ public class NotificationUtil {
             calendar.add(Calendar.DATE, 1);
         }*/
         final long timeTrigger = calendar.getTimeInMillis();
-        Log.i("???", "asd:: " + timeTrigger);
 
         //Setting intent to class where Alarm broadcast message will be handled
         Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
+        intent.putExtra("reminderUid", reminderUid);
         intent.putExtra("medicinesUid", medicines.getMedicinesUid());
         intent.putExtra("medicinesName", medicines.getName());
         intent.putExtra("medicinesPicture", medicines.getMedicinePicture().name());

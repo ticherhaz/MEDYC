@@ -7,6 +7,7 @@ public class Constant {
     public static final String DB_MEDICINE = "medicine";
     public static final String DB_USER = "user";
     public static final String DB_FEEDBACK = "feedback";
+    public static final String DB_REMINDER = "reminder";
 
 
     public static final int NOTIFICATION_ID_PILL_REMINDER = 4001;

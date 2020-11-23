@@ -34,15 +34,18 @@
         android:text="Are you taking the medicine?" />
 
     <RadioGroup
+        android:id="@+id/rg_medicine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:id="@+id/rb_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Yes" />
 
         <RadioButton
+            android:id="@+id/rb_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="No" />

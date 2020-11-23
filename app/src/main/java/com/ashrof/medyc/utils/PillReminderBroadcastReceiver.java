@@ -13,6 +13,7 @@ public class PillReminderBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         //See this note if onReceive not called
         //https://stackoverflow.com/a/60197247/9346054
+        final String reminderUid = intent.getStringExtra("reminderUid");
         final String medicinesUid = intent.getStringExtra("medicinesUid");
         final String medicinesName = intent.getStringExtra("medicinesName");
         final String medicinesPicture = intent.getStringExtra("medicinesPicture");
@@ -27,7 +28,7 @@ public class PillReminderBroadcastReceiver extends BroadcastReceiver {
         }
 
         NotificationUtil.PillReminderNotification(context, (int) System.currentTimeMillis(),
-                "Pill Reminder", medicinesName, "Please take medicines for " + medicinesName, medicinesColor, medicinesPicture, medicinesUid, medicinesName);
+                "Pill Reminder", medicinesName, "Please take medicines for " + medicinesName, medicinesColor, medicinesPicture, reminderUid, medicinesUid, medicinesName);
 
         /*//Example situation, at 12pm, no internet right, then it come here and set for them
 
