@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CalendarView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -21,7 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.model.Medicines;
 import com.ashrof.medyc.model.Reminder;
+import com.ashrof.medyc.model.User;
+import com.ashrof.medyc.utils.Constant;
 import com.ashrof.medyc.utils.NotificationUtil;
+import com.ashrof.medyc.utils.Simpan;
 import com.ashrof.medyc.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -50,6 +52,7 @@ public class HomeFragment extends Fragment {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+    private User user;
 
     private CalendarView calendarView;
     private FirebaseRecyclerOptions<Medicines> firebaseRecyclerOptions;
@@ -73,6 +76,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         initIntent();
         root = inflater.inflate(R.layout.fragment_home, container, false);
+        user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         initFirebase();
         initView();
         return root;
@@ -115,22 +119,14 @@ public class HomeFragment extends Fragment {
         calendarView.setMinDate(minDate.getTimeInMillis());
 
         //set on click
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
-                Calendar mCurrentTime = Calendar.getInstance();
-                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mCurrentTime.get(Calendar.MINUTE);
-                TimePickerDialog mTimePicker;
-                mTimePicker = new TimePickerDialog(requireContext(), new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        dialogListMedicine(i1, i2, selectedHour, selectedMinute);
-                    }
-                }, hour, minute, true);//Yes 24 hour time
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
-            }
+        calendarView.setOnDateChangeListener((calendarView, i, i1, i2) -> {
+            final Calendar mCurrentTime = Calendar.getInstance();
+            final int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+            final int minute = mCurrentTime.get(Calendar.MINUTE);
+
+            final TimePickerDialog mTimePicker = new TimePickerDialog(requireContext(), (timePicker, selectedHour, selectedMinute) -> dialogListMedicine(i1, i2, selectedHour, selectedMinute), hour, minute, true);//Yes 24 hour time
+            mTimePicker.setTitle("Select Time");
+            mTimePicker.show();
         });
     }
 
@@ -153,7 +149,7 @@ public class HomeFragment extends Fragment {
 
     private void setFirebaseRecyclerAdapter(final Dialog dialog, final int month, final int day, final int hour, final int min) {
         firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<Medicines>()
-                .setQuery(databaseReference.child(DB_MEDICINE), Medicines.class)
+                .setQuery(databaseReference.child(DB_MEDICINE).child(user.getUserUid()), Medicines.class)
                 .build();
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Medicines, MedicinesFragment.MedicinesViewHolder>(firebaseRecyclerOptions) {
@@ -166,19 +162,23 @@ public class HomeFragment extends Fragment {
                 holder.getIvMedicine().setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(model.getMedicinePicture())));
                 holder.getCardView().setCardBackgroundColor(Color.parseColor(model.getColourMedicine().getCodeColor()));
 
-                holder.getView().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final String reminderUid = databaseReference.push().getKey();
+                holder.getView().setOnClickListener(view -> {
+                    final String reminderUid = databaseReference.push().getKey();
 
-                        NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model, reminderUid);
-                        Utils.ShowToast(requireContext(), "Successfully set reminder for " + model.getName());
+                    NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model, reminderUid);
+                    Utils.ShowToast(requireContext(), "Successfully set reminder for " + model.getName());
 
-                        //After that we add to reminder
-                        final Reminder reminder = new Reminder(reminderUid, model.getMedicinesUid(), TarikhMasa.GetTarikhMasa(), null, null, month, day, hour, min);
-                        databaseReference.child(DB_REMINDER).child(Objects.requireNonNull(firebaseAuth.getUid())).child(Objects.requireNonNull(reminderUid)).setValue(reminder);
-                        dialog.dismiss();
-                    }
+                    final Calendar calendarSet = Calendar.getInstance();
+                    calendarSet.set(Calendar.HOUR_OF_DAY, hour);
+                    calendarSet.set(Calendar.MINUTE, min);
+                    calendarSet.set(Calendar.SECOND, 0);
+                    calendarSet.set(Calendar.DAY_OF_MONTH, day);
+                    calendarSet.set(Calendar.MONTH, month);
+
+                    //After that we add to reminder
+                    final Reminder reminder = new Reminder(reminderUid, model.getMedicinesUid(), TarikhMasa.GetTarikhMasa(), null, null, month, day, hour, min, calendarSet.getTimeInMillis());
+                    databaseReference.child(DB_REMINDER).child(Objects.requireNonNull(firebaseAuth.getUid())).child(Objects.requireNonNull(reminderUid)).setValue(reminder);
+                    dialog.dismiss();
                 });
             }
 

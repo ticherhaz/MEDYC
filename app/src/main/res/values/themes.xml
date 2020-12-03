@@ -20,9 +20,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.MEDYC.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
-    </style>
+    <style name="Theme.MEDYC.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"></style>
 
-    <style name="Theme.MEDYC.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
-    </style>
+    <style name="Theme.MEDYC.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"></style>
 </resources>

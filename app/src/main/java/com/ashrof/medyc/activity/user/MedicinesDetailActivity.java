@@ -4,18 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ashrof.medyc.R;
+import com.ashrof.medyc.model.Medicines;
 import com.ashrof.medyc.model.User;
 import com.ashrof.medyc.utils.Constant;
 import com.ashrof.medyc.utils.Simpan;
 import com.ashrof.medyc.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MedicinesDetailActivity extends AppCompatActivity {
 
@@ -27,6 +33,7 @@ public class MedicinesDetailActivity extends AppCompatActivity {
 
     private TextView textViewMedicineName;
     private EditText etReason;
+    private ImageView ivMedicine;
 
     private Button btnSave;
 
@@ -41,6 +48,7 @@ public class MedicinesDetailActivity extends AppCompatActivity {
         initFirebase();
         setContentView(R.layout.activity_medicines_detail);
         initView();
+        initDisplayData();
     }
 
     private void initIntent() {
@@ -53,6 +61,7 @@ public class MedicinesDetailActivity extends AppCompatActivity {
     private void initView() {
         textViewMedicineName = findViewById(R.id.tv_name);
         textViewMedicineName.setText(medicineName);
+        ivMedicine = findViewById(R.id.iv_medicine);
 
         etReason = findViewById(R.id.et_reason);
         btnSave = findViewById(R.id.btn_save);
@@ -61,10 +70,30 @@ public class MedicinesDetailActivity extends AppCompatActivity {
         setBtnSave();
     }
 
+    private void initDisplayData() {
+        databaseReference.child(Constant.DB_MEDICINE).child(user.getUserUid()).child(medicineUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    final Medicines medicines = snapshot.getValue(Medicines.class);
+                    if (medicines != null) {
+                        ivMedicine.setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(medicines.getMedicinePicture())));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
     private void initFirebase() {
         user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child(Constant.DB_REMINDER).child(user.getUserUid());
+        databaseReference = firebaseDatabase.getReference();
     }
 
     private void setRadioButton() {
@@ -84,12 +113,13 @@ public class MedicinesDetailActivity extends AppCompatActivity {
     private void setBtnSave() {
         btnSave.setOnClickListener(view -> {
             if (isTakingMedicine != null) {
-                databaseReference.child(reminderUid).child("takingMedicine").setValue(isTakingMedicine);
+                databaseReference.child(Constant.DB_REMINDER).child(user.getUserUid()).child(reminderUid).child("takingMedicine").setValue(isTakingMedicine);
                 final String reason = etReason.getText().toString();
-                if (reason != null && !reason.isEmpty()) {
-                    databaseReference.child(reminderUid).child("reason").setValue(reason);
+                if (!reason.isEmpty()) {
+                    databaseReference.child(Constant.DB_REMINDER).child(user.getUserUid()).child(reminderUid).child("reason").setValue(reason);
                 }
                 Utils.ShowToast(MedicinesDetailActivity.this, "Record saved successfully");
+                finish();
             } else {
                 Utils.ShowToast(MedicinesDetailActivity.this, "Please choose the yes or no");
             }

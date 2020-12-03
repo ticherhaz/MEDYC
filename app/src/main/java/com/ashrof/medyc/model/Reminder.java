@@ -4,12 +4,13 @@ public class Reminder {
 
     private String reminderUid, medicineUid, onCreatedDate, takingMedicine, reason;
     private int month, day, hour, min;
+    private long timeInMillisSet;
 
 
     public Reminder() {
     }
 
-    public Reminder(String reminderUid, String medicineUid, String onCreatedDate, String takingMedicine, String reason, int month, int day, int hour, int min) {
+    public Reminder(String reminderUid, String medicineUid, String onCreatedDate, String takingMedicine, String reason, int month, int day, int hour, int min, long timeInMillisSet) {
         this.reminderUid = reminderUid;
         this.medicineUid = medicineUid;
         this.onCreatedDate = onCreatedDate;
@@ -19,6 +20,15 @@ public class Reminder {
         this.day = day;
         this.hour = hour;
         this.min = min;
+        this.timeInMillisSet = timeInMillisSet;
+    }
+
+    public long getTimeInMillisSet() {
+        return timeInMillisSet;
+    }
+
+    public void setTimeInMillisSet(long timeInMillisSet) {
+        this.timeInMillisSet = timeInMillisSet;
     }
 
     public String getTakingMedicine() {

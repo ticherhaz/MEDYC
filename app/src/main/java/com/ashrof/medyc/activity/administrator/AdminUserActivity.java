@@ -17,11 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.model.User;
+import com.ashrof.medyc.utils.Constant;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static net.ticherhaz.tarikhmasa.TarikhMasa.ConvertTarikhMasa2LocalTime;
 
@@ -71,13 +75,10 @@ public class AdminUserActivity extends AppCompatActivity {
                     mobileFixed = "Mobile number not found";
                 else mobileFixed = model.getMobile();
                 holder.getTvMobile().setText(mobileFixed);
-                holder.getTvMobile().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final Uri number = Uri.parse("tel:+" + model.getMobile());
-                        final Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
-                        startActivity(callIntent);
-                    }
+                holder.getTvMobile().setOnClickListener(view -> {
+                    final Uri number = Uri.parse("tel:+" + model.getMobile());
+                    final Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+                    startActivity(callIntent);
                 });
 
 
@@ -85,13 +86,14 @@ public class AdminUserActivity extends AppCompatActivity {
                 Glide.with(AdminUserActivity.this)
                         .load(model.getProfileUrl())
                         .into(holder.getIvProfile());
-
-                holder.getView().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //
-                    }
+                holder.getView().setOnClickListener(view -> {
+                    //
                 });
+
+
+                //Detail
+                final String detail = "Detail:\n" + callTotalMedicines(model.getUserUid()) + "\n" + callTotalReminder(model.getUserUid());
+                holder.getTvDetail().setText(detail);
             }
 
             @NonNull
@@ -113,11 +115,52 @@ public class AdminUserActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(AdminUserActivity.this));
     }
 
+    private String callTotalMedicines(final String userUid) {
+        final String[] message = new String[1];
+        databaseReference.child(Constant.DB_MEDICINE).child(userUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    final long totalMedicine = snapshot.getChildrenCount();
+                    final String messageMedicines = "Total Medicines: " + totalMedicine;
+                    message[0] = messageMedicines;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return message[0];
+    }
+
+    private String callTotalReminder(final String userUid) {
+        final String[] message = new String[1];
+        databaseReference.child(Constant.DB_REMINDER).child(userUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    final long totalReminder = snapshot.getChildrenCount();
+                    final String messageReminder = "Total Reminder: " + totalReminder;
+                    message[0] = messageReminder;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return message[0];
+    }
+
 
     private static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private View view;
         private TextView tvName, tvEmail, tvMobile, tvDate;
+        private TextView tvDetail;
         private ImageView ivProfile;
 
         UserViewHolder(@NonNull View itemView) {
@@ -128,6 +171,7 @@ public class AdminUserActivity extends AppCompatActivity {
             tvMobile = view.findViewById(R.id.tv_mobile);
             tvEmail = view.findViewById(R.id.tv_email);
             ivProfile = view.findViewById(R.id.iv_profile);
+            tvDetail = view.findViewById(R.id.tv_detail);
         }
 
         public View getView() {
@@ -152,6 +196,14 @@ public class AdminUserActivity extends AppCompatActivity {
 
         public void setTvDate(TextView tvDate) {
             this.tvDate = tvDate;
+        }
+
+        public TextView getTvDetail() {
+            return tvDetail;
+        }
+
+        public void setTvDetail(TextView tvDetail) {
+            this.tvDetail = tvDetail;
         }
 
         public TextView getTvEmail() {

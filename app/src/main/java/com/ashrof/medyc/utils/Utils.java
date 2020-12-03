@@ -3,13 +3,9 @@ package com.ashrof.medyc.utils;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.Gravity;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ashrof.medyc.R;
@@ -17,14 +13,17 @@ import com.ashrof.medyc.enumerator.Ubat;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 
 public class Utils {
 
-    private static ProgressDialog progressDialog, progressDialogMessage;
+    private static ProgressDialog progressDialog;
     private static Toast toast;
 
     public static void ShowProgressDialog(Context context) {
@@ -43,6 +42,14 @@ public class Utils {
         }
     }
 
+    public static String FormattedDateFromCalendar(final Date calendarDate) {
+        final String newDateFormat = "d MMM yyyy";
+        final SimpleDateFormat format = new SimpleDateFormat(newDateFormat, Locale.getDefault());
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(calendarDate.getTime());
+        return format.format(calendar.getTime());
+    }
+
     public static boolean IsNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -57,12 +64,7 @@ public class Utils {
         AlertDialog alertDialog = new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
                 .create();
         alertDialog.show();
     }
@@ -107,26 +109,6 @@ public class Utils {
         return "";
     }
 
-    public static String CurrencyUser(final String currency) {
-        switch (currency) {
-            case "MYR":
-                return "RM";
-            case "IDR":
-                return "Rp";
-            case "USD":
-            case "SGD":
-            case "AUD":
-                return "$";
-            case "EUR":
-                return "€";
-            case "GBP":
-                return "£";
-            case "KWD":
-                return "د.ك";
-        }
-        return null;
-    }
-
     public static String GetMonth(final int month) {
         String monthString;
         if (month == 1) {
@@ -157,35 +139,6 @@ public class Utils {
             monthString = "";
         }
         return monthString;
-    }
-
-    public static String CoinDisplay(final long number) {
-        if (number < 1000)
-            return "" + number;
-        int exp = (int) (Math.log(number) / Math.log(1000));
-        return String.format(Locale.getDefault(), "%.2f %c", number / Math.pow(1000, exp), "kMGTPE".charAt(exp - 1));
-    }
-
-    public static String MoneyDisplay(final double number, final String currency) {
-        if (number < 1000)
-            return String.format(Locale.getDefault(), "%s%.2f", currency, number);
-        int exp = (int) (Math.log(number) / Math.log(1000));
-        return String.format(Locale.getDefault(), "%s%.2f %c", currency, number / Math.pow(1000, exp), "kMGTPE".charAt(exp - 1));
-    }
-
-    public static void AdsChecker(final boolean dahPremium, final ImageView imageViewAds, final FrameLayout adContainerView, final boolean isAdmobDisplay) {
-        if (dahPremium) {
-            imageViewAds.setVisibility(View.GONE);
-            adContainerView.setVisibility(View.GONE);
-        } else {
-            if (isAdmobDisplay) {
-                imageViewAds.setVisibility(View.GONE);
-                adContainerView.setVisibility(View.VISIBLE);
-            } else {
-                imageViewAds.setVisibility(View.VISIBLE);
-                adContainerView.setVisibility(View.GONE);
-            }
-        }
     }
 
     public static int GetDrawableUbat(final Ubat ubat) {

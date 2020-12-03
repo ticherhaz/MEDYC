@@ -30,11 +30,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import net.ticherhaz.tarikhmasa.TarikhMasa;
+
 import java.util.Objects;
 
 import static com.ashrof.medyc.utils.Constant.DB_MEDICINE;
 import static com.ashrof.medyc.utils.Constant.DB_REMINDER;
 import static net.ticherhaz.tarikhmasa.TarikhMasa.ConvertTarikhMasa2LocalTime;
+import static net.ticherhaz.tarikhmasa.TarikhMasa.ConvertTimeStamp2TarikhMasa;
 
 
 public class DashboardFragment extends Fragment {
@@ -91,22 +94,29 @@ public class DashboardFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull ReminderViewHolder holder, int position, @NonNull Reminder model) {
                 final String takeMedic;
+                final String dateReminder = TarikhMasa.ConvertTarikhMasa2LocalTime(ConvertTimeStamp2TarikhMasa(model.getTimeInMillisSet()));
 
                 if (model.getTakingMedicine() != null) {
                     takeMedic = model.getTakingMedicine();
                 } else
                     takeMedic = "";
-                holder.getTvStatus().setText("Already take medicine: " + takeMedic);
-                databaseReference.child(DB_MEDICINE).child(model.getMedicineUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                final String reason = model.getReason();
+                String reasonCustom;
+                if (reason != null)
+                    reasonCustom = "\nReason: " + reason;
+                else
+                    reasonCustom = "";
+
+                holder.getTvStatus().setText("Took medicine: " + takeMedic + "\nDate remind to take medicine: " + dateReminder + reasonCustom);
+                holder.getTvDate().setText("Created: " + ConvertTarikhMasa2LocalTime(model.getOnCreatedDate()));
+
+                databaseReference.child(DB_MEDICINE).child(firebaseAuth.getUid()).child(model.getMedicineUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             final Medicines medicines = snapshot.getValue(Medicines.class);
                             if (medicines != null) {
                                 holder.getTvName().setText(medicines.getName());
-
-                                holder.getTvDate().setText(ConvertTarikhMasa2LocalTime(medicines.getOnCreatedDate()));
-
                                 holder.getIvMedicine().setImageDrawable(getResources().getDrawable(Utils.GetDrawableUbat(medicines.getMedicinePicture())));
                                 holder.getCardView().setCardBackgroundColor(Color.parseColor(medicines.getColourMedicine().getCodeColor()));
                             }
@@ -119,8 +129,6 @@ public class DashboardFragment extends Fragment {
 
                     }
                 });
-                holder.getTvName().setText(model.getReminderUid());
-
 
               /*  holder.getView().setOnClickListener(view -> {
                     final Intent intent = new Intent(getContext(), MedicinesEditActivity.class);

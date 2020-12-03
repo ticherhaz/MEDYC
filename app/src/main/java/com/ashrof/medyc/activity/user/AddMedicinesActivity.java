@@ -6,7 +6,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ashrof.medyc.R;
@@ -14,10 +13,10 @@ import com.ashrof.medyc.enumerator.Colour;
 import com.ashrof.medyc.enumerator.Status;
 import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.model.User;
 import com.ashrof.medyc.utils.Constant;
+import com.ashrof.medyc.utils.Simpan;
 import com.ashrof.medyc.utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -27,6 +26,8 @@ public class AddMedicinesActivity extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+
+    private User user;
 
     private EditText editTextName;
     private ImageView ivColorRed, ivColorGreen, ivColorBrown, ivColorPurple;
@@ -41,6 +42,7 @@ public class AddMedicinesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initFirebase();
         setContentView(R.layout.activity_add_medicines);
+        user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         initView();
         setButtonAdd();
         setButtonReset();
@@ -84,80 +86,69 @@ public class AddMedicinesActivity extends AppCompatActivity {
     }
 
     private void setButtonAdd() {
-        buttonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!editTextName.getText().toString().isEmpty()) {
-                    if (pickedUbat != null) {
-                        if (pickedColour != null) {
-                            //here we are now ready to update to database
-                            final String medicineUid = databaseReference.push().getKey();
-                            final Medicines medicines = new Medicines(medicineUid, editTextName.getText().toString(), TarikhMasa.GetTarikhMasa(), pickedUbat, pickedColour, Status.ACTIVE);
-                            databaseReference.child(medicineUid).setValue(medicines).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Utils.ShowToast(AddMedicinesActivity.this, "Added new medicine");
-                                        resetAll();
-                                    }
-                                }
-                            });
-                        } else {
-                            Utils.ShowToast(AddMedicinesActivity.this, "Please pick colour");
-                        }
+        buttonSave.setOnClickListener(view -> {
+            if (!editTextName.getText().toString().isEmpty()) {
+                if (pickedUbat != null) {
+                    if (pickedColour != null) {
+                        //here we are now ready to update to database
+                        final String medicineUid = databaseReference.push().getKey();
+                        final Medicines medicines = new Medicines(medicineUid, editTextName.getText().toString(), TarikhMasa.GetTarikhMasa(), pickedUbat, pickedColour, Status.ACTIVE);
+                        assert medicineUid != null;
+                        databaseReference.child(user.getUserUid()).child(medicineUid).setValue(medicines).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Utils.ShowToast(AddMedicinesActivity.this, "Added new medicine");
+                                resetAll();
+                            }
+                        });
                     } else {
-                        Utils.ShowToast(AddMedicinesActivity.this, "Please pick medicine icon");
+                        Utils.ShowToast(AddMedicinesActivity.this, "Please pick colour");
                     }
-
+                } else {
+                    Utils.ShowToast(AddMedicinesActivity.this, "Please pick medicine icon");
                 }
+
             }
         });
     }
 
     private void setButtonReset() {
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Utils.ShowToast(AddMedicinesActivity.this, "Reset successfully");
-                resetAll();
-            }
+        buttonReset.setOnClickListener(view -> {
+            Utils.ShowToast(AddMedicinesActivity.this, "Reset successfully");
+            resetAll();
         });
     }
 
     private void setIvColorClicked(final ImageView iv, final Colour colour) {
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (colour) {
-                    case RED:
-                        pickedColour = Colour.RED;
-                        ivColorRed.setVisibility(View.VISIBLE);
-                        ivColorBrown.setVisibility(View.INVISIBLE);
-                        ivColorGreen.setVisibility(View.INVISIBLE);
-                        ivColorPurple.setVisibility(View.INVISIBLE);
-                        break;
-                    case BROWN:
-                        pickedColour = Colour.BROWN;
-                        ivColorRed.setVisibility(View.INVISIBLE);
-                        ivColorBrown.setVisibility(View.VISIBLE);
-                        ivColorGreen.setVisibility(View.INVISIBLE);
-                        ivColorPurple.setVisibility(View.INVISIBLE);
-                        break;
-                    case GREEN:
-                        pickedColour = Colour.GREEN;
-                        ivColorRed.setVisibility(View.INVISIBLE);
-                        ivColorBrown.setVisibility(View.INVISIBLE);
-                        ivColorGreen.setVisibility(View.VISIBLE);
-                        ivColorPurple.setVisibility(View.INVISIBLE);
-                        break;
-                    case PURPLE:
-                        pickedColour = Colour.PURPLE;
-                        ivColorRed.setVisibility(View.INVISIBLE);
-                        ivColorBrown.setVisibility(View.INVISIBLE);
-                        ivColorGreen.setVisibility(View.INVISIBLE);
-                        ivColorPurple.setVisibility(View.VISIBLE);
-                        break;
-                }
+        iv.setOnClickListener(view -> {
+            switch (colour) {
+                case RED:
+                    pickedColour = Colour.RED;
+                    ivColorRed.setVisibility(View.VISIBLE);
+                    ivColorBrown.setVisibility(View.INVISIBLE);
+                    ivColorGreen.setVisibility(View.INVISIBLE);
+                    ivColorPurple.setVisibility(View.INVISIBLE);
+                    break;
+                case BROWN:
+                    pickedColour = Colour.BROWN;
+                    ivColorRed.setVisibility(View.INVISIBLE);
+                    ivColorBrown.setVisibility(View.VISIBLE);
+                    ivColorGreen.setVisibility(View.INVISIBLE);
+                    ivColorPurple.setVisibility(View.INVISIBLE);
+                    break;
+                case GREEN:
+                    pickedColour = Colour.GREEN;
+                    ivColorRed.setVisibility(View.INVISIBLE);
+                    ivColorBrown.setVisibility(View.INVISIBLE);
+                    ivColorGreen.setVisibility(View.VISIBLE);
+                    ivColorPurple.setVisibility(View.INVISIBLE);
+                    break;
+                case PURPLE:
+                    pickedColour = Colour.PURPLE;
+                    ivColorRed.setVisibility(View.INVISIBLE);
+                    ivColorBrown.setVisibility(View.INVISIBLE);
+                    ivColorGreen.setVisibility(View.INVISIBLE);
+                    ivColorPurple.setVisibility(View.VISIBLE);
+                    break;
             }
         });
     }

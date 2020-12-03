@@ -19,6 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.model.User;
+import com.ashrof.medyc.utils.Constant;
+import com.ashrof.medyc.utils.Simpan;
 import com.ashrof.medyc.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -35,6 +38,7 @@ public class MedicinesFragment extends Fragment {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private User user;
 
     private FirebaseRecyclerOptions<Medicines> firebaseRecyclerOptions;
     private FirebaseRecyclerAdapter<Medicines, MedicinesViewHolder> firebaseRecyclerAdapter;
@@ -50,6 +54,7 @@ public class MedicinesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_medicines, container, false);
+        user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         initFirebase();
         initView();
         setFirebaseRecyclerAdapter();
@@ -70,7 +75,7 @@ public class MedicinesFragment extends Fragment {
 
     private void setFirebaseRecyclerAdapter() {
         firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<Medicines>()
-                .setQuery(databaseReference.child(DB_MEDICINE), Medicines.class)
+                .setQuery(databaseReference.child(DB_MEDICINE).child(user.getUserUid()), Medicines.class)
                 .build();
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Medicines, MedicinesViewHolder>(firebaseRecyclerOptions) {

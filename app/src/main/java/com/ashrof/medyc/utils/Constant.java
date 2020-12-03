@@ -16,6 +16,6 @@ public class Constant {
     public static final String NOTIFICATION_CHANNEL_DESC_PILL_REMINDER = "Show notification reminder to take medicines";
 
 
-    public static final int NOTIFICATION_ID_RECEIVE_ALARM_2_MINUTES =4002;
+    public static final int NOTIFICATION_ID_RECEIVE_ALARM_2_MINUTES = 4002;
 
 }

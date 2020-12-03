@@ -21,10 +21,8 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.ashrof.medyc.MainActivity;
 import com.ashrof.medyc.R;
 import com.ashrof.medyc.activity.user.HomeActivity;
-import com.ashrof.medyc.activity.user.MedicinesDetailActivity;
 import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
 
@@ -68,7 +66,7 @@ public class NotificationUtil {
     }
 
     public static void PillReminderNotification(final Context context, final int notificationUid,
-                                                final String summary, final String title, final String description, final String medicinesColor, final String medicinePicture,final String reminderUid, final String medicineUid, final String medicineName) {
+                                                final String summary, final String title, final String description, final String medicinesColor, final String medicinePicture, final String reminderUid, final String medicineUid, final String medicineName) {
         // 1. Create/Retrieve Notification Channel for O and beyond devices (26+).
         final String notificationChannelId = createNotificationChannel(context, NOTIFICATION_CHANNEL_ID_PILL_REMINDER, NOTIFICATION_CHANNEL_NAME_PILL_REMINDER, NOTIFICATION_CHANNEL_DESC_PILL_REMINDER);
 
