@@ -90,10 +90,8 @@ public class AdminUserActivity extends AppCompatActivity {
                     //
                 });
 
-
                 //Detail
-                final String detail = "Detail:\n" + callTotalMedicines(model.getUserUid()) + "\n" + callTotalReminder(model.getUserUid());
-                holder.getTvDetail().setText(detail);
+                callDetail(model.getUserUid(), holder.getTvDetail());
             }
 
             @NonNull
@@ -115,15 +113,30 @@ public class AdminUserActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(AdminUserActivity.this));
     }
 
-    private String callTotalMedicines(final String userUid) {
-        final String[] message = new String[1];
+    private void callDetail(final String userUid, final TextView textView) {
         databaseReference.child(Constant.DB_MEDICINE).child(userUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     final long totalMedicine = snapshot.getChildrenCount();
                     final String messageMedicines = "Total Medicines: " + totalMedicine;
-                    message[0] = messageMedicines;
+
+                    databaseReference.child(Constant.DB_REMINDER).child(userUid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                final long totalReminder = snapshot.getChildrenCount();
+                                final String messageReminder = "Total Reminder: " + totalReminder;
+                                final String messageFinal = "Detail: \n" + messageMedicines + "\n" + messageReminder;
+                                textView.setText(messageFinal);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             }
 
@@ -132,29 +145,7 @@ public class AdminUserActivity extends AppCompatActivity {
 
             }
         });
-        return message[0];
     }
-
-    private String callTotalReminder(final String userUid) {
-        final String[] message = new String[1];
-        databaseReference.child(Constant.DB_REMINDER).child(userUid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    final long totalReminder = snapshot.getChildrenCount();
-                    final String messageReminder = "Total Reminder: " + totalReminder;
-                    message[0] = messageReminder;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        return message[0];
-    }
-
 
     private static class UserViewHolder extends RecyclerView.ViewHolder {
 
