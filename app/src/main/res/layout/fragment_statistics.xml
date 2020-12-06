@@ -118,7 +118,6 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="4dp"
                     android:layout_weight="0.35"
-                    android:enabled="false"
                     android:text="Reset" />
             </LinearLayout>
         </LinearLayout>

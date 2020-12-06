@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,11 +48,10 @@ import static com.ashrof.medyc.utils.Utils.FormattedDateFromCalendar;
 
 public class StatisticsFragment extends Fragment {
 
-    protected final String[] parties = new String[]{
-            "Yes", "No"
+    public static final int[] LIBERTY_COLORS = {
+            Color.rgb(28, 121, 0), Color.rgb(99, 0, 0)
     };
-    //--------
-    private final Calendar myCalendar = Calendar.getInstance();
+    private Calendar myCalendar = Calendar.getInstance();
     private final List<ChartData> chartData = new ArrayList<>();
     private View root;
     private User user;
@@ -66,6 +65,7 @@ public class StatisticsFragment extends Fragment {
     private String calendarFromDatePicker = FormattedDateFromCalendar(myCalendar.getTime());
     private TextView tvTotalReminder, tvTotalMedicines, tvTookMedicine;
     private PieChart chart;
+    private Button btnReset;
 
     public StatisticsFragment() {
         // Required empty public constructor
@@ -88,6 +88,7 @@ public class StatisticsFragment extends Fragment {
         tvTotalMedicines = root.findViewById(R.id.tv_total_medicines);
         tvTotalReminder = root.findViewById(R.id.tv_total_reminder);
         tvTookMedicine = root.findViewById(R.id.tv_took_medicine);
+        btnReset = root.findViewById(R.id.btn_reset);
 
         chart = root.findViewById(R.id.chart1);
         chart.setUsePercentValues(true);
@@ -133,12 +134,27 @@ public class StatisticsFragment extends Fragment {
         //chart.setEntryLabelTypeface(tfRegular);
         chart.setEntryLabelTextSize(12f);
 
-        setData(chartData.size());
+        if (chartData.size() == 0) {
+            setDataInit(2);
+        } else {
+            setData(chartData.size());
+        }
+
 
         callTotalMedicines();
         callTotalReminder();
         callTookMedicine();
         setCvFilter();
+        setBtnReset();
+    }
+
+    private void setBtnReset(){
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               updateLabelReset();
+            }
+        });
     }
 
     private SpannableString generateCenterSpannableText() {
@@ -174,21 +190,61 @@ public class StatisticsFragment extends Fragment {
 
         ArrayList<Integer> colors = new ArrayList<>();
 
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+        for (int c : LIBERTY_COLORS)
             colors.add(c);
-        for (int c : ColorTemplate.JOYFUL_COLORS)
+       /* for (int c : ColorTemplate.JOYFUL_COLORS)
             colors.add(c);
         for (int c : ColorTemplate.COLORFUL_COLORS)
             colors.add(c);
         for (int c : ColorTemplate.LIBERTY_COLORS)
             colors.add(c);
         for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
+            colors.add(c);*/
 
-        colors.add(ColorTemplate.getHoloBlue());
+        // colors.add(ColorTemplate.getHoloBlue());
 
         dataSet.setColors(colors);
         //dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        data.setValueTextColor(Color.WHITE);
+        // data.setValueTypeface(tfLight);
+        chart.setData(data);
+
+        // undo all highlights
+        chart.highlightValues(null);
+        chart.invalidate();
+    }
+
+    private void setDataInit(final int count) {
+        List<ChartData> chartDataInit = new ArrayList<>();
+        chartDataInit.add(new ChartData("Yes", 1));
+        chartDataInit.add(new ChartData("No", 1));
+        final ArrayList<PieEntry> entries = new ArrayList<>();
+
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+        // the chart.
+        for (int i = 0; i < count; i++) {
+            //  entries.add(new PieEntry(10, parties[i % parties.length], getResources().getDrawable(R.drawable.star)));
+            entries.add(new PieEntry(chartDataInit.get(i).getValue(), chartDataInit.get(i).getTitle(), getResources().getDrawable(R.drawable.star)));
+        }
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+
+        dataSet.setDrawIcons(false);
+        dataSet.setSliceSpace(3f);
+        dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int c : LIBERTY_COLORS)
+            colors.add(c);
+        dataSet.setColors(colors);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
@@ -229,7 +285,12 @@ public class StatisticsFragment extends Fragment {
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
-
+    private void updateLabelReset() {
+        myCalendar =  Calendar.getInstance();
+        tvFilterResult.setText(FormattedDateFromCalendar(myCalendar.getTime()));
+        calendarFromDatePicker = FormattedDateFromCalendar(myCalendar.getTime());
+        callData();
+    }
     private void updateLabel() {
         tvFilterResult.setText(FormattedDateFromCalendar(myCalendar.getTime()));
         calendarFromDatePicker = FormattedDateFromCalendar(myCalendar.getTime());
@@ -250,7 +311,6 @@ public class StatisticsFragment extends Fragment {
                             final String date = reminder.getOnCreatedDate();
                             final String dateCustom = TarikhMasa.ConvertTarikhMasa2LocalTimePattern(date, "d MMM yyyy");
                             final String takingMedicine = reminder.getTakingMedicine();
-                            Log.i("???", "Va: " + reminder.getTakingMedicine());
 
                             if (dateCustom.equals(FormattedDateFromCalendar(myCalendar.getTime()))) {
                                 if (takingMedicine != null) {
@@ -264,11 +324,21 @@ public class StatisticsFragment extends Fragment {
                         }
                     }
 
-                    chartData.add(new ChartData("Yes", totalYes));
-                    chartData.add(new ChartData("No", totalNo));
+                    if (totalYes > 0){
+                        chartData.add(new ChartData("Yes", totalYes));
+                    }
+
+                    if (totalNo > 0){
+                        chartData.add(new ChartData("No", totalNo));
+                    }
 
                 }
-                setData(chartData.size());
+                Log.i("???","size:: " + chartData.size());
+                if (chartData.size() == 0) {
+                    setDataInit(2);
+                } else {
+                    setData(chartData.size());
+                }
             }
 
             @Override
