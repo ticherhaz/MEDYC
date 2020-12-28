@@ -4,6 +4,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
+import com.ashrof.medyc.enumerator.Colour;
+import com.ashrof.medyc.enumerator.TypeReminder;
+import com.ashrof.medyc.enumerator.Ubat;
+import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.model.Reminder;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Objects;
+
+import static com.ashrof.medyc.utils.Constant.NOTIFICATION_ID_PILL_REMINDER;
+
 
 public class PillReminderBroadcastReceiver extends BroadcastReceiver {
 
@@ -27,8 +44,36 @@ public class PillReminderBroadcastReceiver extends BroadcastReceiver {
 
         }
 
-        NotificationUtil.PillReminderNotification(context, (int) System.currentTimeMillis(),
-                "Pill Reminder", medicinesName, "Please take medicines for " + medicinesName, medicinesColor, medicinesPicture, reminderUid, medicinesUid, medicinesName);
+        FirebaseDatabase.getInstance().getReference().child(Constant.DB_REMINDER).child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child(reminderUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    final Reminder reminder = snapshot.getValue(Reminder.class);
+                    if (reminder != null) {
+                        final String typeReminder = reminder.getTypeReminder();
+                        if (typeReminder != null) {
+                            if (typeReminder.equals(TypeReminder.EVERYDAY.name())) {
+
+                                final Medicines medicines = new Medicines(medicinesUid, medicinesName, null, Ubat.valueOf(medicinesPicture), Colour.valueOf(medicinesColor), null);
+                                //So we repeat again everyday
+                                NotificationUtil.AlarmManagerPillReminderRepeat(context, NOTIFICATION_ID_PILL_REMINDER, medicines, reminderUid);
+                            } else {
+
+                            }
+                            NotificationUtil.PillReminderNotification(context, (int) System.currentTimeMillis(),
+                                    "Pill Reminder", medicinesName, "Please take medicines for " + medicinesName, medicinesColor, medicinesPicture, reminderUid, medicinesUid, medicinesName);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
 
         /*//Example situation, at 12pm, no internet right, then it come here and set for them
 

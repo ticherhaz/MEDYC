@@ -185,6 +185,38 @@ public class NotificationUtil {
         }
     }
 
+
+    public static void AlarmManagerPillReminderRepeat(final Context context, final int notificationUid, final Medicines medicines, final String reminderUid) {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        final long timeTrigger = calendar.getTimeInMillis();
+
+        //Setting intent to class where Alarm broadcast message will be handled
+        Intent intent = new Intent(context, PillReminderBroadcastReceiver.class);
+        intent.putExtra("reminderUid", reminderUid);
+        intent.putExtra("medicinesUid", medicines.getMedicinesUid());
+        intent.putExtra("medicinesName", medicines.getName());
+        intent.putExtra("medicinesPicture", medicines.getMedicinePicture().name());
+        intent.putExtra("medicinesColor", medicines.getColourMedicine().getCodeColor());
+
+        //Setting alarm pending intent
+        enableBootReceiver(context);
+        final PendingIntent pendingIntentActivity = PendingIntent.getBroadcast(context, notificationUid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //getting instance of AlarmManager service
+        final AlarmManager alarmManagerActivity = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+
+        //We are NOT using setRepeating and setInexactRepeating because there will be problems for Android API above.
+        //Can see this https://stackoverflow.com/a/39739886
+        Log.i("???", "alarmManagerActivity:: " + alarmManagerActivity);
+        if (Build.VERSION.SDK_INT >= 23) {
+            alarmManagerActivity.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeTrigger, pendingIntentActivity);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            alarmManagerActivity.setExact(AlarmManager.RTC_WAKEUP, timeTrigger, pendingIntentActivity);
+        } else {
+            alarmManagerActivity.set(AlarmManager.RTC_WAKEUP, timeTrigger, pendingIntentActivity);
+        }
+    }
+
     //Not use, but dont delete
   /*  public static void AlarmManagerStaff(final Context context, final int notificationUid) {
         final long timeTrigger = System.currentTimeMillis() + (5 * 60 * 60 * 1000); //5 hours

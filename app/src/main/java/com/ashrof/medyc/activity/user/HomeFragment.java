@@ -5,12 +5,14 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CalendarView;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashrof.medyc.R;
+import com.ashrof.medyc.enumerator.TypeReminder;
 import com.ashrof.medyc.model.Medicines;
 import com.ashrof.medyc.model.Reminder;
 import com.ashrof.medyc.model.User;
@@ -61,6 +64,7 @@ public class HomeFragment extends Fragment {
     private String medicineUid;
     private String medicineName;
     private String reminderUid;
+    private int radioChecked = -1;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -95,7 +99,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
     private void initView() {
         calendarView = root.findViewById(R.id.calendarView);
         setCalendarView();
@@ -124,10 +127,48 @@ public class HomeFragment extends Fragment {
             final int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
             final int minute = mCurrentTime.get(Calendar.MINUTE);
 
-            final TimePickerDialog mTimePicker = new TimePickerDialog(requireContext(), (timePicker, selectedHour, selectedMinute) -> dialogListMedicine(i1, i2, selectedHour, selectedMinute), hour, minute, true);//Yes 24 hour time
+            final TimePickerDialog mTimePicker = new TimePickerDialog(requireContext(), (timePicker, selectedHour, selectedMinute) -> dialogChooseOption(i1, i2, selectedHour, selectedMinute), hour, minute, true);//Yes 24 hour time
             mTimePicker.setTitle("Select Time");
             mTimePicker.show();
         });
+    }
+
+    private void dialogChooseOption(final int month, final int day, final int hour, final int min) {
+        final Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_choose_specific);
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(Objects.requireNonNull(dialog.getWindow()).getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        final RadioGroup rg = dialog.findViewById(R.id.rg_option);
+        rg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_0) {
+                //Mean everyday
+                radioChecked = 0;
+                Log.i("???","checked Id: " + radioChecked);
+            } else if (checkedId == R.id.rb_1) {
+                //Specific only
+                radioChecked = 1;
+            }
+        });
+
+
+        dialog.findViewById(R.id.btn_continue).setOnClickListener(view -> {
+            if (radioChecked == -1){
+                Utils.ShowToast(requireContext(),"Please select choose option");
+            }else {
+                Log.i("???","checked Id: " + radioChecked);
+                dialogListMedicine(month, day, hour, min);
+                dialog.dismiss();
+            }
+
+        });
+        dialog.findViewById(R.id.iv_close).setOnClickListener(view -> dialog.dismiss());
+
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
     }
 
     private void dialogListMedicine(final int month, final int day, final int hour, final int min) {
@@ -164,6 +205,12 @@ public class HomeFragment extends Fragment {
 
                 holder.getView().setOnClickListener(view -> {
                     final String reminderUid = databaseReference.push().getKey();
+                    String typeReminder = null;
+                    if (radioChecked == 0){
+                        typeReminder = TypeReminder.EVERYDAY.name();
+                    }else if (radioChecked ==1 ){
+                        typeReminder = TypeReminder.ONE_TIME.name();
+                    }
 
                     NotificationUtil.AlarmManagerPillReminder(getContext(), NOTIFICATION_ID_PILL_REMINDER, month, day, hour, min, model, reminderUid);
                     Utils.ShowToast(requireContext(), "Successfully set reminder for " + model.getName());
@@ -176,7 +223,7 @@ public class HomeFragment extends Fragment {
                     calendarSet.set(Calendar.MONTH, month);
 
                     //After that we add to reminder
-                    final Reminder reminder = new Reminder(reminderUid, model.getMedicinesUid(), TarikhMasa.GetTarikhMasa(), null, null, month, day, hour, min, calendarSet.getTimeInMillis());
+                    final Reminder reminder = new Reminder(reminderUid, model.getMedicinesUid(), TarikhMasa.GetTarikhMasa(), null, null, typeReminder, month, day, hour, min, calendarSet.getTimeInMillis());
                     databaseReference.child(DB_REMINDER).child(Objects.requireNonNull(firebaseAuth.getUid())).child(Objects.requireNonNull(reminderUid)).setValue(reminder);
                     dialog.dismiss();
                 });

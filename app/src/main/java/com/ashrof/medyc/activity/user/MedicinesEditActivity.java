@@ -14,7 +14,9 @@ import com.ashrof.medyc.enumerator.Colour;
 import com.ashrof.medyc.enumerator.Status;
 import com.ashrof.medyc.enumerator.Ubat;
 import com.ashrof.medyc.model.Medicines;
+import com.ashrof.medyc.model.User;
 import com.ashrof.medyc.utils.Constant;
+import com.ashrof.medyc.utils.Simpan;
 import com.ashrof.medyc.utils.Utils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +36,8 @@ public class MedicinesEditActivity extends AppCompatActivity {
     private Colour pickedColour;
     private Ubat pickedUbat;
 
+    private User user;
+
     private String medicinesUid, name, onCreatedDate, status, picture, color;
 
     @Override
@@ -41,6 +45,7 @@ public class MedicinesEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initIntent();
         initFirebase();
+        user = Simpan.getInstance().getObject(Constant.USER_DATA_KEY, User.class);
         setContentView(R.layout.activity_medicines_edit);
         initView();
         initDisplay();
@@ -114,7 +119,7 @@ public class MedicinesEditActivity extends AppCompatActivity {
                         //here we are now ready to update to database
                         final String medicineUid = medicinesUid;
                         final Medicines medicines = new Medicines(medicineUid, editTextName.getText().toString(), TarikhMasa.GetTarikhMasa(), pickedUbat, pickedColour, Status.ACTIVE);
-                        databaseReference.child(medicineUid).setValue(medicines).addOnCompleteListener(task -> {
+                        databaseReference.child(user.getUserUid()).child(medicineUid).setValue(medicines).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 Utils.ShowToast(MedicinesEditActivity.this, "Updated medicine");
                                 resetAll();

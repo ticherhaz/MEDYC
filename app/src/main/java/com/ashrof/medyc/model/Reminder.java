@@ -2,7 +2,7 @@ package com.ashrof.medyc.model;
 
 public class Reminder {
 
-    private String reminderUid, medicineUid, onCreatedDate, takingMedicine, reason;
+    private String reminderUid, medicineUid, onCreatedDate, takingMedicine, reason, typeReminder;
     private int month, day, hour, min;
     private long timeInMillisSet;
 
@@ -10,12 +10,21 @@ public class Reminder {
     public Reminder() {
     }
 
-    public Reminder(String reminderUid, String medicineUid, String onCreatedDate, String takingMedicine, String reason, int month, int day, int hour, int min, long timeInMillisSet) {
+    public String getTypeReminder() {
+        return typeReminder;
+    }
+
+    public void setTypeReminder(String typeReminder) {
+        this.typeReminder = typeReminder;
+    }
+
+    public Reminder(String reminderUid, String medicineUid, String onCreatedDate, String takingMedicine, String reason, String typeReminder, int month, int day, int hour, int min, long timeInMillisSet) {
         this.reminderUid = reminderUid;
         this.medicineUid = medicineUid;
         this.onCreatedDate = onCreatedDate;
         this.takingMedicine = takingMedicine;
         this.reason = reason;
+        this.typeReminder = typeReminder;
         this.month = month;
         this.day = day;
         this.hour = hour;
