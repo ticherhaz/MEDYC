@@ -293,7 +293,7 @@ public class MedicinesEditActivity extends AppCompatActivity {
     private void setButtonDelete() {
         buttonDelete.setOnClickListener(v -> {
             Utils.ShowProgressDialog(MedicinesEditActivity.this);
-            databaseReference.child(medicinesUid).removeValue().addOnCompleteListener(task -> {
+            databaseReference.child(user.getUserUid()).child(medicinesUid).removeValue().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Utils.ShowToast(MedicinesEditActivity.this, "Successfully deleted " + name);
                     resetAll();
